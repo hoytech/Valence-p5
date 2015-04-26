@@ -1,0 +1,4 @@
+- Don't send save when we don't care about return value (use wantarray)
+- Support callbacks in nested structures in arguments (not just top-level)
+- Handle exceptions properly (Callback::Frame)
+- Use hash-ref overload for accessing attributes
