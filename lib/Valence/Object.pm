@@ -8,10 +8,10 @@ use Scalar::Util;
 our $AUTOLOAD;
 
 use overload fallback => 1,
-             '&{}' => \&_invoke_as_sub;
+             '&{}' => \&_valence_invoke_as_sub;
 
 
-sub _new {
+sub _valence_new {
   my ($class, %args) = @_;
 
   my $self = {
@@ -28,9 +28,6 @@ sub _new {
   return $self;
 }
 
-
-sub _valence {
-}
 
 
 
@@ -52,7 +49,7 @@ sub AUTOLOAD {
 
 
 
-sub _invoke_as_sub {
+sub _valence_invoke_as_sub {
   my $self = shift;
 
   return sub {
@@ -74,15 +71,6 @@ sub _invoke_as_sub {
   };
 }
 
-
-sub _row {
-  my ($self, $key) = (shift, shift);
-  my $class = ref $self;
-  bless $self, 'overload::dummy';
-  my $out = $self->{$key};
-  bless $self, $class;
-  $out;
-}
 
 
 

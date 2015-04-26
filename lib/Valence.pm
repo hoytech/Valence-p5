@@ -121,7 +121,7 @@ sub _call_method {
 
   $msg->{cmd} = 'call';
 
-  my $obj = Valence::Object->_new(valence => $self);
+  my $obj = Valence::Object->_valence_new(valence => $self);
 
   $msg->{save} = $obj->{id};
 
@@ -138,7 +138,7 @@ sub _get_attr {
 
   $msg->{cmd} = 'attr';
 
-  my $obj = Valence::Object->_new(valence => $self);
+  my $obj = Valence::Object->_valence_new(valence => $self);
 
   $msg->{save} = $obj->{id};
 
