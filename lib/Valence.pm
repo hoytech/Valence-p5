@@ -9,15 +9,21 @@ use Callback::Frame;
 use JSON::XS;
 use File::Spec;
 
+use Alien::Electron;
 use Valence::Object;
 
 
-my $electron_dir = '/home/doug/tp/electron';
 my $valence_dir = '/home/doug/valence';
 
 
 sub new {
   my ($class, %args) = @_;
+
+  my $electron_binary = $args{electron_binary} ||
+                        $ENV{ELECTRON_BINARY} ||
+                        $Alien::Electron::electron_binary;
+
+  debug(1, sub { "Electron binary location: $electron_binary" });
 
   my $self = {
     next_object_id => 1,
@@ -31,7 +37,7 @@ sub new {
 
   my ($fh1, $fh2) = portable_socketpair();
 
-  $self->{cv} = run_cmd [ "$electron_dir/electron", $valence_dir ],
+  $self->{cv} = run_cmd [ $electron_binary, $valence_dir ],
                         close_all => 1,
                         '>' => $fh2,
                         '<' => $fh2,
