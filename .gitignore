@@ -1,0 +1,8 @@
+README
+Makefile
+Makefile.old
+MYMETA.*
+blib/
+pm_to_blib
+MANIFEST.bak
+Valence-*.tar.gz

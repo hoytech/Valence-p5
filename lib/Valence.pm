@@ -8,12 +8,13 @@ use AnyEvent::Handle;
 use Callback::Frame;
 use JSON::XS;
 use File::Spec;
+use File::ShareDir;
 
 use Alien::Electron;
 use Valence::Object;
 
 
-my $valence_dir = '/home/doug/valence';
+our $VERSION = '0.100';
 
 
 sub new {
@@ -22,8 +23,12 @@ sub new {
   my $electron_binary = $args{electron_binary} ||
                         $ENV{ELECTRON_BINARY} ||
                         $Alien::Electron::electron_binary;
-
   debug(1, sub { "Electron binary location: $electron_binary" });
+
+  my $valence_dir = $args{valence_dir} ||
+                    $ENV{VALENCE_DIR} ||
+                    File::ShareDir::dist_dir('Valence');
+  debug(1, sub { "Valence JS directory: $valence_dir" });
 
   my $self = {
     next_object_id => 1,
@@ -376,6 +381,8 @@ L<The Valence perl module github repo|https://github.com/hoytech/Valence-p5>
 L<Alien::Electron>
 
 L<The electron project|https://github.com/atom/electron> - Official website
+
+Valence was heavily inspired by the L<thrust|https://github.com/breach/thrust> project and large parts were ported over from my L<Thrust> module.
 
 =head1 AUTHOR
 

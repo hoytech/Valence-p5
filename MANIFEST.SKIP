@@ -1,0 +1,12 @@
+MANIFEST.bak
+MANIFEST.SKIP
+Makefile.old
+Makefile$
+README.pod
+.gitignore
+.git/
+blib/
+pm_to_blib
+MYMETA.*
+Valence.*tar[.]gz$
+valence/.git
