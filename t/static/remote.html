@@ -1,0 +1,15 @@
+<html>
+  <body>
+    Remote test
+
+    <script>
+      var ipc = require('ipc');
+
+      ipc.send('ready');
+
+      ipc.on('ping', function(message) {
+        ipc.send('pong', message + message);
+      });
+    </script>
+  </body>
+</html>
