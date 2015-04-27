@@ -8,7 +8,6 @@ t/ipc.t
 t/load.t
 t/static/remote.html
 TODO
-tp.pl
 valence/package.json
 valence/README.md
 valence/valence.js
