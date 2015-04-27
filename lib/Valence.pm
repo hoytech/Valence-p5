@@ -227,39 +227,41 @@ Valence - Perl interface to electron GUI tool-kit
 
 =head1 DESCRIPTION
 
-L<Electron|https://github.com/atom/electron> is chromium-based GUI application framework. It allows you to create "native" applications in HTML, CSS, and javascript. The L<Valence> perl module is an RPC binding that lets you use perl instead of javascript for the electron "main" process. It relies on a javascript module L<valence.js|https://github.com/hoytech/valence> which is responsible for proxying messages between the browser render process(es) and your perl controller process.
+L<Electron|https://github.com/atom/electron> is chromium-based GUI application framework. It allows you to create "native" applications in HTML, CSS, and javascript. The L<Valence> perl module is an RPC binding that lets you use perl instead of javascript for the electron "main" process. It bundles a javascript module L<valence.js|https://github.com/hoytech/valence> which is responsible for proxying messages between the browser render process(es) and your perl controller process.
 
-Since valence is a generic RPC framework, none of the electron methods are hard-coded in the perl or javascript bridges. This means that all of the L<electron docs|https://github.com/atom/electron/tree/master/docs> are applicable and should be consulted for any
+Since valence is a generic RPC framework, none of the electron methods are hard-coded in the perl or javascript bridges. This means that all of the L<electron docs|https://github.com/atom/electron/tree/master/docs> are applicable and should be used as reference when developing with this module.
 
-=head1 ASYNC PROGRAMMING
+=head1 DESIGN
+
+=head2 ASYNC PROGRAMMING
 
 Like browser programming itself, programming the perl side of a Valence application is done asynchronously. The L<Valence> package depends on L<AnyEvent> for this purpose so you can use whichever event loop you prefer. See the L<AnyEvent> documentation for details on asynchronous programming.
 
-The C<run> method of the Valence context object simply waits on a condition variable that will never be signalled (well you can if you want to, it's in C<< $v->{cv} >>) in order to enter the event loop and "sleep forever". C<run> is mostly there so you don't need to type C<< use AnyEvent; AE::cv->recv >> in simple scripts/examples.
+The C<run> method of the Valence context object simply waits on a condition variable that will never be signalled (well you can signal it if you want to, it's in C<< $v->{cv} >>) in order to enter the event loop and "sleep forever". C<run> is mostly there so you don't need to type C<< use AnyEvent; AE::cv->recv >> in simple scripts/examples.
 
 =head2 METHODS
 
-The C<require> method initiates a C<require> call in the electron main process and immediately returns a C<Valence::Object>. Any methods that are called on this object will initiate the corresponding method calls in the electron main process and will also return C<Valence::Object>s. The C<new> method is slightly special in that it will use the javascript C<new> function, but it also returns C<Valence::Object>s corresponding to the newly constructed javascript objects:
+The C<require> method initiates a C<require> call in the electron main process and immediately returns a C<Valence::Object>. Any methods that are called on this object will initiate the corresponding method calls in the electron main process and will also themselves return C<Valence::Object>s. The C<new> method is slightly special in that it will use the javascript C<new> function, but it too returns C<Valence::Object>s corresponding to the newly constructed javascript objects:
 
     my $window = $browser_window->new({ title => "My Title" });
 
-C<Valence::Object>s are essentially references into values inside the electron main process. If you destroy the last reference to one of these objects, their corresponding values will be deleted in the javascript process and eventually garbage collected.
+C<Valence::Object>s are essentially perl-side references to values inside the electron main javascript process. If you destroy the last reference to one of these objects, their corresponding values will be deleted in the javascript process and eventually garbage collected.
 
-As well as calling methods on C<Valence::Object>s, you may also treat them as C<sub>s and pass in a callback that will receive a value. This is how you can access the javascript values from the perl process. For example:
+As well as calling methods on C<Valence::Object>s, you may also treat them as C<sub>s and pass in callbacks that receive the referenced values. This is how you can access javascript values from the perl process. For example:
 
     $main_window->getPosition->(sub {
-      my $res = shift;
-      say "POSITION: x = $res->[0], y => $res->[1]";
+      my $pos = shift;
+      say "POSITION: x = $pos->[0], y => $pos->[1]";
     });
 
 =head2 ATTRIBUTES
 
-Every C<Valence::Object> has a special C<attr> method which looks up an object attribute and returns a C<Valence::Object> referring to it. For example:
+C<Valence::Object> has a special C<attr> method which looks up an object attribute and returns a C<Valence::Object> referring to the attribute value. For example:
 
-    $web_contents = $main_window->attr('webContents');
-    ## like: var web_contents = main_window.webContents;
+    my $web_contents = $main_window->attr('webContents');
+    ## simile to this JS: var web_contents = main_window.webContents;
 
-Eventually attributes should be accessible via a hash reference overload which would be a slightly nicer syntax.
+Eventually attributes should be accessible via a hash reference overload which will be a slightly nicer syntax.
 
 =head2 CALLBACKS
 
@@ -324,7 +326,7 @@ If you set C<VALENCE_DEBUG> to C<2> or higher, you will also see the standard er
 
 =head1 IPC
 
-An essential feature of valence is providing bi-directional, asynchronous messaging between your application and the browser render process. It does this over the standard input/standard output interface provided by C<valence.js>. Without this support we would need to allocate some kind of network port or unix socket file and start some thing like an AJAX or websocket server.
+An essential feature of valence is providing bi-directional, asynchronous messaging between your application and the browser render process. It does this over the standard input/standard output interface provided by C<valence.js>. Without this support we would need to allocate some kind of network port or unix socket and start something like an AJAX or websocket server.
 
 =head2 BROWSER TO PERL
 
@@ -344,7 +346,7 @@ On the perl side, you receive these messages like so:
 
 =head2 PERL TO BROWSER
 
-Sending from perl to the browser should use code like this:
+Sending messages from perl to the browser should use code like this:
 
     my $web_contents = $main_window->attr('webContents');
     $web_contents->send('my-event' => 'my message');
@@ -352,13 +354,13 @@ Sending from perl to the browser should use code like this:
 And the javascript side can receive these messages like so:
 
     var ipc = require('ipc');
-    ipc.on('ping', function(message) {
+    ipc.on('my-event', function(message) {
         console.log(message); // prints 'my message'
     });
 
 =head2 IPC READY EVENTS
 
-Before applications can send messages from perl to javascript, the C<ipc.on()> function must have been called to handle these messages. If you try to send a message before this, it is likely that the message will be delivered to the browser before the handler has been installed so your message will be lost. Applications should make javascript send a message indicating that the communication channel is ready, after which the perl component can begin sending messages to the browser.
+Before applications can send messages from perl to javascript, the C<ipc.on()> function must have been called to handle these messages. If you try to send a message before this, it is likely that the message will be delivered to the browser before the handler has been installed so your message will be lost. Applications should have javascript send a message indicating that the communication channel is ready, after which the perl component can begin sending messages to the browser.
 
 For an example of how this is done, see the C<t/ipc.t> test and how the perl side subscribes to a C<ready> IPC message before attempting to send its C<ping> message, and how the C<t/static/remote.html> arranges for javascript to send the C<ready> message after it has installed its C<ping> handler.
 
@@ -374,6 +376,14 @@ As mentioned above, C<sub>s nested inside hashes or arrays will currently not pr
 
 Attributes should ideally be accessed via a hash reference overload instead of the C<attr> special method.
 
+C<new> methods cannot yet accept more than one parameter (how do you do this in JS?).
+
+When a callback function is deleted on the javascript side, the perl-side doesn't know about this so its corresponding callback will remain forever. Is there a way to detect this in JS?
+
+It currently always sends a C<save> (immediately followed by a C<destroy>) even when it doesn't need the value. This is inefficient and should be fixed using C<wantarray>.
+
+Exceptions thrown in the JS side should be handled better (using L<Callback::Frame>).
+
 =head1 SEE ALSO
 
 L<The Valence perl module github repo|https://github.com/hoytech/Valence-p5>
@@ -382,7 +392,7 @@ L<Alien::Electron>
 
 L<The electron project|https://github.com/atom/electron> - Official website
 
-Valence was heavily inspired by the L<thrust|https://github.com/breach/thrust> project and large parts were ported over from my L<Thrust> module.
+Valence was heavily inspired by the L<thrust|https://github.com/breach/thrust> project and some parts were ported over from my L<Thrust> module.
 
 =head1 AUTHOR
 
