@@ -10,3 +10,4 @@ pm_to_blib
 MYMETA.*
 Valence.*tar[.]gz$
 valence/.git
+valence/logo.svg

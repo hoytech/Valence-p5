@@ -7,6 +7,7 @@ MANIFEST
 t/ipc.t
 t/load.t
 t/static/remote.html
-valence/package.json
+valence/app/package.json
+valence/app/valence.js
+valence/LICENSE
 valence/README.md
-valence/valence.js

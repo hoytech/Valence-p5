@@ -4,7 +4,7 @@ use ExtUtils::MakeMaker;
 use File::ShareDir::Install;
 
 
-install_share dist => 'valence';
+install_share dist => 'valence/app';
 
 
 my %args = (
