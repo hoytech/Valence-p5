@@ -259,9 +259,9 @@ As well as calling methods on C<Valence::Object>s, you may also treat them as C<
 C<Valence::Object> has a special C<attr> method which looks up an object attribute and returns a C<Valence::Object> referring to the attribute value. For example:
 
     my $web_contents = $main_window->attr('webContents');
-    ## simile to this JS: var web_contents = main_window.webContents;
+    ## similar to this JS: var web_contents = main_window.webContents;
 
-Eventually attributes should be accessible via a hash reference overload which will be a slightly nicer syntax.
+Eventually I may make attributes accessible via a hash reference overload which would be a slightly nicer syntax.
 
 =head2 CALLBACKS
 
@@ -370,7 +370,7 @@ Currently this software has two tests, C<load.t> which verifies L<Valence> is in
 
 =head1 BUGS
 
-A fairly large limitation with the proxying approach is that event handlers cannot prevent the default event from firing (ie with C<event.preventDefault()>. This is because the stub event handler in javascript simply forwards the event trigger and its arguments to the perl process and returns.
+A fairly large limitation with the proxying approach is that event handlers cannot prevent the default event from firing (ie with C<event.preventDefault()>). This is because the stub event handler in javascript simply forwards the event trigger and its arguments to the perl process and returns.
 
 As mentioned above, C<sub>s nested inside hashes or arrays will currently not properly get stubbed out (but this can be fixed if needed).
 
