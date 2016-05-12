@@ -10,9 +10,11 @@ my $cv = AE::cv;
 
 my $v = Valence->new;
 
-my $app = $v->require('app');
-my $browser_window = $v->require('browser-window');
-my $ipc = $v->require('ipc');
+my $electron = $v->require('electron');
+
+my $app = $electron->attr('app');
+my $browser_window = $electron->attr('BrowserWindow');
+my $ipc = $electron->attr('ipcMain');
 
 my $main_window;
 
@@ -34,7 +36,7 @@ $app->on(ready => sub {
     });
   });
 
-  $main_window->loadUrl('file://' . getcwd() . '/t/static/remote.html');
+  $main_window->loadURL('file://' . getcwd() . '/t/static/remote.html');
 
   $main_window->openDevTools;
 });

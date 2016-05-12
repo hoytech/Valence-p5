@@ -3,13 +3,13 @@
     Remote test
 
     <script>
-      var ipc = require('ipc');
+      var ipc = require('electron').ipcRenderer;
 
-      ipc.send('ready');
-
-      ipc.on('ping', function(message) {
+      ipc.on('ping', function(event, message) {
         ipc.send('pong', message + message);
       });
+
+      ipc.send('ready');
     </script>
   </body>
 </html>

@@ -11,12 +11,12 @@ my %args = (
     NAME => 'Valence',
     VERSION_FROM => 'lib/Valence.pm',
     PREREQ_PM => {
+      'Alien::Electron' => '0.102',
       'common::sense' => 0,
       'AnyEvent' => 0,
       'Callback::Frame' => 0,
       'JSON::XS' => 0,
       'File::Spec' => 0,
-      'Alien::Electron' => 0,
       'File::ShareDir' => 0,
     },
     CONFIGURE_REQUIRES => {
