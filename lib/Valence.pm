@@ -380,9 +380,9 @@ Currently this software has two tests, C<load.t> which verifies L<Valence> is in
 
 =head1 BACKWARDS COMPATIBILITY
 
-The extent to which this module is backwards-compatible depends on the underlying C<electron> project. The API was changed drastically between electron C<0.25.1> and C<1.0.1> (corresponding to L<Valence> releases C<0.100> and C<0.200>) so you will have to port your apps over. Sorry about that.
+The extent to which this module is backwards-compatible depends on the underlying C<electron> project. The API was changed drastically between electron C<0.25.1> and C<1.0.1> (corresponding to L<Valence> releases C<0.100> and C<0.200>) so you will have to port your apps over. Sorry about that. The changes are described in more detail in L<this electron blog post|http://electron.atom.io/blog/2015/11/17/electron-api-changes>.
 
-Presumably now that C<electron> has reached version C<1.0.0> it should now be more stable (but it's javascript so I wouldn't get my hopes up).
+Presumably now that C<electron> has reached version C<1.0.0> it should now be more stable.
 
 =head1 BUGS
 
