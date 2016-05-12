@@ -211,19 +211,21 @@ Valence - Perl interface to electron GUI tool-kit
 
     use Valence;
 
-    my $v = Valence->new;
+    my $valence = Valence->new;
 
-    $v->require('app')->on(ready => sub {
-      my $main_window = $v->require('browser-window')->new({
+    my $electron = $valence->require('electron');
+
+    $electron->attr('app')->on(ready => sub {
+      my $main_window = $electron->attr('BrowserWindow')->new({
                            width => 1000,
                            height => 600,
                            title => 'My App',
                         });
 
-      $main_window->loadUrl('data:text/html,Hello World!'); ## or file://, https://, etc
+      $main_window->loadURL('data:text/html,Hello World!'); ## or file://, https://, etc
     });
 
-    $v->run; ## enter event loop
+    $valence->run; ## enter event loop
 
 =head1 DESCRIPTION
 
@@ -237,13 +239,13 @@ Since valence is a generic RPC framework, none of the electron methods are hard-
 
 Like browser programming itself, programming the perl side of a Valence application is done asynchronously. The L<Valence> package depends on L<AnyEvent> for this purpose so you can use whichever event loop you prefer. See the L<AnyEvent> documentation for details on asynchronous programming.
 
-The C<run> method of the Valence context object simply waits on a condition variable that will never be signalled (well you can signal it if you want to, it's in C<< $v->{cv} >>) in order to enter the event loop and "sleep forever". C<run> is mostly there so you don't need to type C<< use AnyEvent; AE::cv->recv >> in simple scripts/examples.
+The C<run> method of the Valence context object simply waits on a condition variable that will never be signalled (well you can signal it if you want to, it's in C<< $valence->{cv} >>) in order to enter the event loop and "sleep forever". C<run> is mostly there so you don't need to type C<< use AnyEvent; AE::cv->recv >> in simple scripts/examples.
 
 =head2 METHODS
 
 The C<require> method initiates a C<require> call in the electron main process and immediately returns a C<Valence::Object>. Any methods that are called on this object will initiate the corresponding method calls in the electron main process and will also themselves return C<Valence::Object>s. The C<new> method is slightly special in that it will use the javascript C<new> function, but it too returns C<Valence::Object>s corresponding to the newly constructed javascript objects:
 
-    my $window = $browser_window->new({ title => "My Title" });
+    my $main_window = $electron->attr('BrowserWindow')->new({ title => "My Title" });
 
 C<Valence::Object>s are essentially perl-side references to values inside the electron main javascript process. If you destroy the last reference to one of these objects, their corresponding values will be deleted in the javascript process and eventually garbage collected.
 
@@ -251,7 +253,7 @@ As well as calling methods on C<Valence::Object>s, you may also treat them as C<
 
     $main_window->getPosition->(sub {
       my $pos = shift;
-      say "POSITION: x = $pos->[0], y => $pos->[1]";
+      print "POSITION: x = $pos->[0], y => $pos->[1]\n";
     });
 
 =head2 ATTRIBUTES
@@ -274,6 +276,14 @@ For example, here is how to install a sub that will be executed whenever the mai
     $main_window->on('focus', sub { say "FOCUSED" });
 
 Note: Due to a current limitation, C<sub>s nested inside hashes or arrays will not get stubbed out correctly.
+
+If you are seeing this error when closing the browser window:
+
+    EV: error in callback (ignoring): AnyEvent::Handle uncaught error: Broken pipe at...
+
+then it means that the C<electron> process has exited but you haven't handled the C<close> event. In this case, typically you just want to exit the perl process also:
+
+    $main_window->on(close => sub { exit });
 
 
 =head1 DEBUGGING
@@ -321,7 +331,7 @@ If you set the C<VALENCE_DEBUG> value to C<1> or higher, you will see a prettifi
                        "cmd" : "cb"
                     }
 
-If you set C<VALENCE_DEBUG> to C<2> or higher, you will also see the standard error output from the electron process, which includes C<console.log()> output.
+If you set C<VALENCE_DEBUG> to C<2> or higher, you will also see the standard error output from the electron process, which includes C<console.error()> output.
 
 
 =head1 IPC
@@ -332,13 +342,13 @@ An essential feature of valence is providing bi-directional, asynchronous messag
 
 In order for the browser to send a message to your perl code, it should execute something like the following javascript code:
 
-    var ipc = require('ipc');
-    ipc.send('my-event', 'my message');
+    var ipcRenderer = require('electron').ipcRenderer;
+    ipcRenderer.send('my-event', 'my message');
 
 On the perl side, you receive these messages like so:
 
-    my $ipc = $v->require('ipc');
-    $ipc->on('my-event' => sub {
+    my $ipcMain = $electron->attr('ipcMain');
+    $ipcMain->on('my-event' => sub {
         my ($event, $message) = @_;
 
         print $message; ## prints 'my message'
@@ -353,20 +363,26 @@ Sending messages from perl to the browser should use code like this:
 
 And the javascript side can receive these messages like so:
 
-    var ipc = require('ipc');
-    ipc.on('my-event', function(message) {
+    var ipcRenderer = require('electron').ipcRenderer;
+    ipcRenderer.on('my-event', function(event, message) {
         console.log(message); // prints 'my message'
     });
 
 =head2 IPC READY EVENTS
 
-Before applications can send messages from perl to javascript, the C<ipc.on()> function must have been called to handle these messages. If you try to send a message before this, it is likely that the message will be delivered to the browser before the handler has been installed so your message will be lost. Applications should have javascript send a message indicating that the communication channel is ready, after which the perl component can begin sending messages to the browser.
+Before applications can send messages from perl to javascript, the C<ipcRenderer.on()> function must have been called to handle these messages. If you try to send a message before this, it is likely that the message will be delivered to the browser before the handler has been installed so your message will be lost. Applications should have javascript send a message indicating that the communication channel is ready, after which the perl component can begin sending messages to the browser.
 
 For an example of how this is done, see the C<t/ipc.t> test and how the perl side subscribes to a C<ready> IPC message before attempting to send its C<ping> message, and how the C<t/static/remote.html> arranges for javascript to send the C<ready> message after it has installed its C<ping> handler.
 
 =head1 TESTS
 
 Currently this software has two tests, C<load.t> which verifies L<Valence> is installed and C<ipc.t> which starts electron and then proceeds to confirm bi-directional transfer of messages between javascript and perl.
+
+=head1 BACKWARDS COMPATIBILITY
+
+The extent to which this module is backwards-compatible depends on the underlying C<electron> project. The API was changed drastically between electron C<0.25.1> and C<1.0.1> (corresponding to L<Valence> releases C<0.100> and C<0.200>) so you will have to port your apps over. Sorry about that.
+
+Presumably now that C<electron> has reached version C<1.0.0> it should now be more stable (but it's javascript so I wouldn't get my hopes up).
 
 =head1 BUGS
 
@@ -376,7 +392,7 @@ As mentioned above, C<sub>s nested inside hashes or arrays will currently not pr
 
 Attributes should ideally be accessed via a hash reference overload instead of the C<attr> special method.
 
-C<new> methods cannot yet accept more than one parameter (how do you do this in JS?).
+C<new> methods cannot yet accept more than one parameter (due to a limitation in C<valence.js> -- how do you do this in JS?).
 
 When a callback function is deleted on the javascript side, the perl-side doesn't know about this so its corresponding callback will remain forever. Is there a way to detect this in JS?
 
@@ -400,12 +416,12 @@ Doug Hoyte, C<< <doug@hcsw.org> >>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2015 Doug Hoyte.
+Copyright 2015-2016 Doug Hoyte.
 
 This module is licensed under the same terms as perl itself.
 
-The bundled C<valence/valence.js> library is Copyright (c) 2015 Doug Hoye and is licensed under the 2-clause BSD license.
+The bundled C<valence/valence.js> library is Copyright (c) 2015-2016 Doug Hoye and is licensed under the 2-clause BSD license.
 
-Electron itself is Copyright (c) 2014 GitHub Inc. and is licensed under the MIT license.
+Electron itself is Copyright (c) 2014-2016 GitHub Inc. and is licensed under the MIT license.
 
 =cut
