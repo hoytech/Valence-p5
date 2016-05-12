@@ -1,2 +1,8 @@
+0.200   2016-05-12
+  * Update for electron 1.0.1
+  * Breaking API changes due to electron changes. You will need to
+    port over all but the simplest programs. See the new POD examples.
+    Sorry about that.
+
 0.100   2015-04-26
   * Initial CPAN release
