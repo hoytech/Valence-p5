@@ -14,7 +14,7 @@ use Alien::Electron;
 use Valence::Object;
 
 
-our $VERSION = '0.200';
+our $VERSION = '0.201';
 
 
 sub new {
