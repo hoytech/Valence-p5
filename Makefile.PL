@@ -4,6 +4,9 @@ use ExtUtils::MakeMaker;
 use File::ShareDir::Install;
 
 
+die "the valence/app directory doesn't exist. if you are building from a git checkout, remember to run 'git submodule update --init'"
+    if !-d 'valence/app';
+
 install_share dist => 'valence/app';
 
 
