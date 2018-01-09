@@ -422,7 +422,7 @@ Copyright 2015-2016 Doug Hoyte.
 
 This module is licensed under the same terms as Perl itself.
 
-The bundled C<valence/valence.js> library is Copyright (c) 2015-2016 Doug Hoye and is licensed under the 2-clause BSD license.
+The bundled C<valence/valence.js> library is Copyright (c) 2015-2016 Doug Hoyte and is licensed under the 2-clause BSD license.
 
 Electron itself is Copyright (c) 2014-2016 GitHub Inc. and is licensed under the MIT license.
 
