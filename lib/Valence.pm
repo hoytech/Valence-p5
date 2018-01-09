@@ -338,7 +338,7 @@ If you set C<VALENCE_DEBUG> to C<2> or higher, you will also see the standard er
 
 =head1 IPC
 
-An essential feature of valence is providing bi-directional, asynchronous messaging between your application and the browser render process. It does this over the standard input/standard output interface provided by C<valence.js>. Without this support we would need to allocate some kind of network port or unix socket and start something like an AJAX or websocket server.
+An essential feature of valence is providing bi-directional, asynchronous messaging between your application and the browser render process. It does this over the standard input/standard output interface provided by C<valence.js>. Without this support we would need to allocate some kind of network port or Unix socket and start something like an AJAX or websocket server.
 
 =head2 BROWSER TO PERL
 
