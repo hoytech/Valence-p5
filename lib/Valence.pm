@@ -263,7 +263,7 @@ As well as calling methods on C<Valence::Object>s, you may also treat them as C<
 C<Valence::Object> has a special C<attr> method which looks up an object attribute and returns a C<Valence::Object> referring to the attribute value. For example:
 
     my $web_contents = $main_window->attr('webContents');
-    ## similar to this JS: var web_contents = main_window.webContents;
+    ## similar to this JavaScript var web_contents = main_window.webContents;
 
 Eventually I may make attributes accessible via a hash reference overload which would be a slightly nicer syntax.
 
@@ -394,13 +394,13 @@ As mentioned above, C<sub>s nested inside hashes or arrays will currently not pr
 
 Attributes should ideally be accessed via a hash reference overload instead of the C<attr> special method.
 
-C<new> methods cannot yet accept more than one parameter (due to a limitation in C<valence.js> -- how do you do this in JS?).
+C<new> methods cannot yet accept more than one parameter (due to a limitation in C<valence.js> -- how do you do this in JavaScript?).
 
-When a callback function is deleted on the JavaScript side, the Perl-side doesn't know about this so its corresponding callback will remain forever. Is there a way to detect this in JS?
+When a callback function is deleted on the JavaScript side, the Perl-side doesn't know about this so its corresponding callback will remain forever. Is there a way to detect this in JavaScript?
 
 It currently always sends a C<save> (immediately followed by a C<destroy>) even when it doesn't need the value. This is inefficient and should be fixed using C<wantarray>.
 
-Exceptions thrown in the JS side should be handled better (using L<Callback::Frame>).
+Exceptions thrown in the JavaScript side should be handled better (using L<Callback::Frame>).
 
 =head1 SEE ALSO
 
