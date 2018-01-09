@@ -290,7 +290,7 @@ then it means that the C<electron> process has exited but you haven't handled th
 
 =head1 DEBUGGING
 
-If you set the C<VALENCE_DEBUG> value to C<1> or higher, you will see a prettified dump of the JSON protocol between the perl and electron process
+If you set the C<VALENCE_DEBUG> value to C<1> or higher, you will see a prettified dump of the JSON protocol between the perl and electron processes
 
     Sending to electron >>>>>>>>>>>>>>>>>
     {
