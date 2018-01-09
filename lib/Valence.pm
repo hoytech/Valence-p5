@@ -372,7 +372,7 @@ And the JavaScript side can receive these messages like so:
 
 =head2 IPC READY EVENTS
 
-Before applications can send messages from Perl to JavaScript, the C<ipcRenderer.on()> function must have been called to handle these messages. If you try to send a message before this, it is likely that the message will be delivered to the browser before the handler has been installed so your message will be lost. Applications should have JavaScript send a message indicating that the communication channel is ready, after which the Perl component can begin sending messages to the browser.
+Before applications can send messages from Perl to JavaScript, the C<ipcRenderer.on()> function must have been called to handle these messages. If you try to send a message before this, it is likely that the message will be delivered to the browser before the handler has been installed, so your message will be lost. Applications should have JavaScript send a message indicating that the communication channel is ready, after which the Perl component can begin sending messages to the browser.
 
 For an example of how this is done, see the C<t/ipc.t> test and how the Perl side subscribes to a C<ready> IPC message before attempting to send its C<ping> message, and how the C<t/static/remote.html> arranges for JavaScript to send the C<ready> message after it has installed its C<ping> handler.
 
@@ -388,7 +388,7 @@ Presumably now that C<electron> has reached version C<1.0.0> it should now be mo
 
 =head1 BUGS
 
-A fairly large limitation with the proxying approach is that event handlers cannot prevent the default event from firing (ie with C<event.preventDefault()>). This is because the stub event handler in JavaScript simply forwards the event trigger and its arguments to the perl process and returns.
+A fairly large limitation with the proxying approach is that event handlers cannot prevent the default event from firing (i.e. with C<event.preventDefault()>). This is because the stub event handler in JavaScript simply forwards the event trigger and its arguments to the perl process and returns.
 
 As mentioned above, C<sub>s nested inside hashes or arrays will currently not properly get stubbed out (but this can be fixed if needed).
 
