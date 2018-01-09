@@ -233,7 +233,7 @@ L<Electron|https://github.com/atom/electron> is chromium-based GUI application f
 
 Since valence is a generic RPC framework, none of the electron methods are hard-coded in the Perl or JavaScript bridges. This means that all of the L<electron docs|https://github.com/atom/electron/tree/master/docs> are applicable and should be used as reference when developing with this module.
 
-B<NOTE>: This module depends on L<Alien::Electron> which will download and install the electron distribution appropriate for your operating system. On Linux this depends on having the C<X11> environment variable set. See the L<Alien::Electron> documention for more details.
+B<NOTE>: This module depends on L<Alien::Electron> which will download and install the electron distribution appropriate for your operating system. On Linux this depends on having the C<X11> environment variable set. See the L<Alien::Electron> documentation for more details.
 
 =head1 DESIGN
 
