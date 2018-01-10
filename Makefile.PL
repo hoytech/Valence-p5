@@ -1,6 +1,6 @@
 use strict;
 
-use ExtUtils::MakeMaker;
+use ExtUtils::MakeMaker qw(6.48);
 use File::ShareDir::Install;
 
 
@@ -37,6 +37,7 @@ my %args = (
         bugtracker => 'https://github.com/hoytech/Valence-p5/issues',
       },
     },
+    MIN_PERL_VERSION => 5.6.0,
 );
 
 WriteMakefile(%args);
