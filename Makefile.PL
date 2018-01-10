@@ -14,6 +14,7 @@ my %args = (
     NAME => 'Valence',
     AUTHOR => ['Doug Hoyte <doug@hcsw.org>'],
     VERSION_FROM => 'lib/Valence.pm',
+    ABSTRACT_FROM => 'lib/Valence.pm',
     PREREQ_PM => {
       'Alien::Electron' => '0.102',
       'common::sense' => 0,
