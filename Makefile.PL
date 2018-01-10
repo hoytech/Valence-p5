@@ -12,7 +12,9 @@ install_share dist => 'valence/app';
 
 my %args = (
     NAME => 'Valence',
+    AUTHOR => ['Doug Hoyte <doug@hcsw.org>'],
     VERSION_FROM => 'lib/Valence.pm',
+    ABSTRACT_FROM => 'lib/Valence.pm',
     PREREQ_PM => {
       'Alien::Electron' => '0.102',
       'common::sense' => 0,
@@ -25,8 +27,6 @@ my %args = (
     CONFIGURE_REQUIRES => {
       'File::ShareDir::Install' => 0,
     },
-    LIBS => [],
-    DEFINE => '',
     LICENSE => 'perl',
     dist => {
       PREOP => 'pod2text $(VERSION_FROM) > $(DISTVNAME)/README',
