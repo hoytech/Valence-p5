@@ -27,8 +27,6 @@ my %args = (
     CONFIGURE_REQUIRES => {
       'File::ShareDir::Install' => 0,
     },
-    LIBS => [],
-    DEFINE => '',
     LICENSE => 'perl',
     dist => {
       PREOP => 'pod2text $(VERSION_FROM) > $(DISTVNAME)/README',
